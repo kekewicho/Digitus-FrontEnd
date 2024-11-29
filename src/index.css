@@ -85,3 +85,21 @@
   color: white !important;
   width: 100%;
 }
+
+.btnSecundario {
+  width: 100%;
+  border: 1px solid gray !important;
+}
+
+
+.category {
+  border-radius: 10px;
+  background-color: var(--primary-color);
+  padding-inline: 10px;
+  padding-block: 3px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 9pt;
+  color: white;
+  opacity: .5;
+}

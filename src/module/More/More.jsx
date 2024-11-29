@@ -63,28 +63,28 @@ export const More = () => {
                     <div className="container-fluid">
                         <div className="row">
                             <div className="itemWrapper col-md-4 ">
-                                <Link className={styles.itemCard}>
+                                <Link className={styles.itemCard} to={`/detalles`}>
                                     <img src="https://www.soriana.com/on/demandware.static/-/Sites-soriana-grocery-master-catalog/default/dw4cf82f91/images/product/7500525617453_A.jpg" alt="" />
                                     <p>Laptopt AMD Ryzen 5 +  16 GB RAM, GPU GeForce 2500x</p>
                                     <h3>$ 10,599.59</h3>
                                 </Link>
                             </div>
                             <div className="itemWrapper col-md-4 ">
-                                <Link className={styles.itemCard}>
+                                <Link className={styles.itemCard} to={`/detalles`}>
                                     <img src="https://www.soriana.com/on/demandware.static/-/Sites-soriana-grocery-master-catalog/default/dw4cf82f91/images/product/7500525617453_A.jpg" alt="" />
                                     <p>Laptopt AMD Ryzen 5 +  16 GB RAM, GPU GeForce 2500x</p>
                                     <h3>$ 10,599.59</h3>
                                 </Link>
                             </div>
                             <div className="itemWrapper col-md-4 ">
-                                <Link className={styles.itemCard}>
+                                <Link className={styles.itemCard} to={`/detalles`}>
                                     <img src="https://www.soriana.com/on/demandware.static/-/Sites-soriana-grocery-master-catalog/default/dw4cf82f91/images/product/7500525617453_A.jpg" alt="" />
                                     <p>Laptopt AMD Ryzen 5 +  16 GB RAM, GPU GeForce 2500x</p>
                                     <h3>$ 10,599.59</h3>
                                 </Link>
                             </div>
                             <div className="itemWrapper col-md-4 ">
-                                <Link className={styles.itemCard}>
+                                <Link className={styles.itemCard} to={`/detalles`}>
                                     <img src="https://www.soriana.com/on/demandware.static/-/Sites-soriana-grocery-master-catalog/default/dw4cf82f91/images/product/7500525617453_A.jpg" alt="" />
                                     <p>Laptopt AMD Ryzen 5 +  16 GB RAM, GPU GeForce 2500x</p>
                                     <h3>$ 10,599.59</h3>
