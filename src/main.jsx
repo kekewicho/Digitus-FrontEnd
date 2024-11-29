@@ -21,7 +21,7 @@ const App = () => {
           <Route path="/" element={<NavBar screen={<Inicio />} />} />
           <Route path="/more" element={<NavBar screen={<More />} />} />
           <Route path="/detalles" element={<NavBar screen={<Detalles />} />} />
-          <Route path="/carrito" element={<NavBar screen={<Carrito />} />} />
+          <Route path="/cart" element={<NavBar screen={<Carrito />} />} />
           <Route path="/checkout" element={<NavBar screen={<Checkout />} />} />
           <Route path="/dashboard" element={<NavBar screen={<Dashboard />} />} />
           <Route path="/detallespedido" element={<NavBar screen={<DetallesPedido />} />} />

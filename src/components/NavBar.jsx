@@ -24,10 +24,10 @@ export const NavBar = ({ screen }) => {
                         </ul>
                         <ul className="navbar-nav mr-auto">
                             <li className="nav-item navbar-btn-container">
-                                <Link className="bi bi-bag navbar-btn shopping-cart-icon" bag-items={"0"} to="#"></Link>
+                                <Link className="bi bi-bag navbar-btn shopping-cart-icon" bag-items={"0"} to="/cart"></Link>
                             </li>
                             <li className="nav-item navbar-btn-container">
-                                <Link className="bi bi-person-fill navbar-btn login-icon" bag-items={"0"} to="#"></Link>
+                                <Link className="bi bi-person-fill navbar-btn login-icon" to="#"></Link>
                             </li>
                         </ul>
                     </div>

@@ -1,0 +1,19 @@
+.mainContainer {
+    height: calc(100vh - 93px);
+}
+
+.card {
+    background-color: var(--background-light);
+    border-radius: 10px;
+    box-shadow: 2px 4px 12px #00000014;
+    padding: 30px !important;
+}
+
+.item img {
+    mix-blend-mode: multiply;
+    width: 100%;
+}
+
+.item btn {
+    border: none;
+}

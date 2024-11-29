@@ -78,3 +78,10 @@
   margin-left: 25px;
   font-size: 21pt;
 }
+
+
+.btnPrimario {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  width: 100%;
+}
