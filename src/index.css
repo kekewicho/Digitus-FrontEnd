@@ -86,9 +86,17 @@
   width: 100%;
 }
 
+.btnPrimario:hover {
+  opacity: .9 !important;
+}
+
 .btnSecundario {
   width: 100%;
   border: 1px solid gray !important;
+}
+
+.btnSecundario:hover {
+  background-color: #f5f5f5 !important;
 }
 
 

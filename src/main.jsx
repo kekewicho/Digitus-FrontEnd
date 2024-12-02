@@ -10,6 +10,7 @@ import { Carrito } from "./module/Carrito/Carrito";
 import { Checkout } from "./module/Checkout/Checkout";
 import { Dashboard } from "./module/Dashboard/Dashboard";
 import { DetallesPedido } from "./module/DetallesPedido/DetallesPedido";
+import { Login } from "./module/Login/Login";
 
 import { NavBar } from "./components/NavBar";
 
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/checkout" element={<NavBar screen={<Checkout />} />} />
           <Route path="/dashboard" element={<NavBar screen={<Dashboard />} />} />
           <Route path="/detallespedido" element={<NavBar screen={<DetallesPedido />} />} />
+          <Route path="/login" element={<NavBar screen={<Login />} />} />
         </Routes>
       </BrowserRouter>
     </React.StrictMode>

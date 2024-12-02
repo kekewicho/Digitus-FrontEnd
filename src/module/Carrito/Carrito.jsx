@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import styles from "./Carrito.module.css"
 
@@ -88,10 +89,10 @@ export const Carrito = () => {
                         </div>
                         <br />
                         <div className="row">
-                            <div className="col-12"><button className="btn btnPrimario">Proceder al pago</button></div>
+                            <div className="col-12"><Link className="btn btnPrimario" to="/checkout">Proceder al pago</Link></div>
                         </div>
                         <div className="row">
-                            <div className="col-12"><button className="btn" style={{ width:'100%', border:'1px lightgray solid', marginTop:'10px' }}>Seguir comprando</button></div>
+                            <div className="col-12"><Link className="btn" style={{ width:'100%', border:'1px lightgray solid', marginTop:'10px' }}>Seguir comprando</Link></div>
                         </div>
                     </div>
                 </div>
