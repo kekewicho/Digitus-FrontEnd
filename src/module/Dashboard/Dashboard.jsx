@@ -12,9 +12,9 @@ export const Dashboard = () => {
             <div className="container-fluid px-5 scrollable y-scroll" style={{ height: 'calc(100vh - 98px)' }}>
                 <div className="row gy-5">
                     <div className="col-md-4">
-                        <div class="input-group mb-3">
-                            <span class="input-group-text bi bi-search" id="basic-addon1"></span>
-                            <input type="text" class="form-control" placeholder="Email cliente, nombre, producto, categoría" aria-label="Username" aria-describedby="basic-addon1" />
+                        <div className="input-group mb-3">
+                            <span className="input-group-text bi bi-search" id="basic-addon1"></span>
+                            <input type="text" className="form-control" placeholder="Email cliente, nombre, producto, categoría" aria-label="Username" aria-describedby="basic-addon1" />
                         </div>
                     </div>
                     <div className="col-md-5"></div>
@@ -74,15 +74,15 @@ export const Dashboard = () => {
                     <div className="col-12">
                         <div className="d-flex justify-content-between mb-3">
                             <h6>Lista de pedidos</h6>
-                            <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btnPrimario">1</button>
-                                <button type="button" class="btn btnPrimario">2</button>
-                                <button type="button" class="btn btnPrimario">3</button>
-                                <button type="button" class="btn btnPrimario">4</button>
-                                <button type="button" class="btn btnPrimario">5</button>
+                            <div className="btn-group" role="group" aria-label="Basic example">
+                                <button type="button" className="btn btnPrimario">1</button>
+                                <button type="button" className="btn btnPrimario">2</button>
+                                <button type="button" className="btn btnPrimario">3</button>
+                                <button type="button" className="btn btnPrimario">4</button>
+                                <button type="button" className="btn btnPrimario">5</button>
                             </div>
                         </div>
-                        <table class="table">
+                        <table className="table">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
@@ -139,14 +139,14 @@ export const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            <div class="modal" id="modalFechas" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content bg-white">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Seleccionar rango de fechas</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div className="modal" id="modalFechas" tabindex="-1">
+                <div className="modal-dialog">
+                    <div className="modal-content bg-white">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Seleccionar rango de fechas</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body bg-white">
+                        <div className="modal-body bg-white">
                             <div className="container-fluid">
                                 <div className="row p-0">
                                     <Calendar
@@ -156,7 +156,7 @@ export const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div className="modal-footer">
                             <div className="container">
                                 <div className="row">
                                     <div className="col-6"></div>

@@ -1,9 +1,14 @@
 import React from "react";
+import { useCart } from "./CartProvider";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from "react-router-dom";
+import { sum } from "../utils";
 
 
 export const NavBar = ({ screen }) => {
+
+    const { cart } = useCart();
+
     return (
         <div className="main-container">
             <nav className={`navbar navbar-expand-lg`}>
@@ -24,7 +29,7 @@ export const NavBar = ({ screen }) => {
                         </ul>
                         <ul className="navbar-nav mr-auto">
                             <li className="nav-item navbar-btn-container">
-                                <Link className="bi bi-bag navbar-btn shopping-cart-icon" bag-items={"0"} to="/cart"></Link>
+                                <Link className="bi bi-bag navbar-btn shopping-cart-icon" bag-items={`${sum(cart, 'cantidad')}`} to="/cart"></Link>
                             </li>
                             <li className="nav-item navbar-btn-container">
                                 <Link className="bi bi-person-fill navbar-btn login-icon" to="#"></Link>

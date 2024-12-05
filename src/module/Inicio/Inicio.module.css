@@ -7,6 +7,20 @@
     box-shadow: 2px 4px 12px #00000014;
     margin-right: 32px;
     margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+
+    & img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit:scale-down;
+        mix-blend-mode: multiply;
+    }
+}
+
+.categorycard:first-child img {
+    object-fit: cover;
 }
 
 .categorycard:first-child {
@@ -22,8 +36,26 @@
     box-shadow: 2px 4px 12px #00000014;
     margin-right: 32px;
     margin-bottom: 20px;
+    overflow: hidden;
+    position: relative;
 }
 
 .card:first-child {
     margin-left: 5%;
+}
+
+.card img {
+    mix-blend-mode: multiply;
+    width: 130%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 50px;
+}
+
+.card h4 {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    color: rgb(82, 82, 82);
 }

@@ -1,10 +1,104 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useCart } from "../../components/CartProvider";
+import { filterData, formatNumber, sum } from "../../utils";
+
+
 
 import styles from "./Checkout.module.css"
 
 export const Checkout = () => {
 
-    const [advance, setAdvance] = useState(0)
+    const [advance, setAdvance] = useState(0);
+    const { cart } = useCart();
+    const [formData, setFormData] = useState({});
+
+    const [userData, setUserData] = useState({});
+    const [addressData, setAddressData] = useState({});
+
+    const cartSubtotales = () => {
+        if (!cart) return [];
+      
+        const data = cart.map((producto) => {
+          return {
+            ...producto,
+            subtotal: producto.cantidad * producto.precio,
+          };
+        });
+
+        return sum(data, 'subtotal')
+    };
+
+    useEffect(()=> {
+        switch (advance) {
+            case 0:
+                validacionStage1() && setStage1(); 
+                break;
+        
+            case 1:
+                validacionStage2() && setStage2();
+            default:
+                break;
+        }
+    },[formData])
+
+    function handleformUpdate(e) {
+        const key = e.target.name;
+        const value = e.target.value;
+
+        setFormData({
+            ...formData,
+            [key]:value
+        })
+    }
+
+
+
+    function validacionStage1() {
+        const emailTest = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo);
+        const phoneTest = /^\+?[0-9]{10,13}$/.test(formData.telefono);
+        const nameTest = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{5,50}$/.test(formData.nombre);
+          
+        return emailTest && phoneTest && nameTest;
+    }
+
+    function setStage1() {
+        fetch('/digitus/usuarios/validarUsuario', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                nombre: formData.nombre,
+                correo: formData.correo,
+                telefono: formData.telefono
+            })
+        })
+        .then(r=>r.json())
+        .then(r=> {
+            setUserData({
+                ...r
+            });
+
+            setAdvance(1);
+        })
+    }
+    
+    
+    function validacionStage2() {
+        return Number.isInteger(parseInt(formData.idDomicilio)) ?? false;
+    }
+
+    function setStage2() {
+        if (formData.idDomicilio > 0) {
+            setAddressData({
+                ...filterData(userData.domicilios, 'idDomicilio', formData.idDomicilio)
+            });
+        }
+
+        setAdvance(2);
+    }
+
+
 
 
     return (
@@ -17,7 +111,7 @@ export const Checkout = () => {
                                 <h6>Subtotal</h6>
                             </div>
                             <div className="col 6 text-end">
-                                <h6>$ 0.00</h6>
+                                <h6>{cart && formatNumber(cartSubtotales() / 1.16, true)}</h6>
                             </div>
                         </div>
                         <div className="row">
@@ -33,7 +127,7 @@ export const Checkout = () => {
                                 <h7>I.V.A. (16 %)</h7>
                             </div>
                             <div className="col-6 text-end">
-                                <h7>$ 200.00</h7>
+                                <h7>{cart && formatNumber(cartSubtotales() - (cartSubtotales() / 1.16), true)}</h7>
                             </div>
                         </div>
                         <hr style={{ borderTop: 'dashed 1px' }} />
@@ -42,13 +136,14 @@ export const Checkout = () => {
                                 <h5>Total</h5>
                             </div>
                             <div className="col-6 text-end">
-                                <h5>$ 359.99</h5>
+                                <h5>{cart && formatNumber(cartSubtotales() + 200, true)}</h5>
                             </div>
                         </div>
                         <br />
                         <div className="row">
                             <div className="col-12"><button className="btn btnPrimario" disabled={advance <= 4}>Confirmar orden</button></div>
                         </div>
+                        <div className="col-12">&nbsp;</div>
                         <div className="row">
                             <div className="col-12"><button className="btn btnSecundario">Seguir comprando</button></div>
                         </div>
@@ -56,41 +151,47 @@ export const Checkout = () => {
                 </div>
                 <div className="col-md-7 col-lg-8">
                     <h4 className="mb-3">Ingresa datos para el registro de la órden</h4>
-                    <form className="needs-validation" novalidate="">
+                    <form className="needs-validation" noValidate="">
                         <div className="row g-3">
                             <div className="col-6">
                                 <label for="email" className="form-label">Ingresa tu correo electrónico</label>
-                                <input type="email" className="form-control" id="email" placeholder="you@example.com" />
+                                <input type="email" className="form-control" id="correo" name="correo" value={formData.correo ?? ''} onChange={handleformUpdate} placeholder="you@example.com" />
                                 <div className="invalid-feedback">
                                     Ingresa un correo electrónico válido.
                                 </div>
                             </div>
-                            <div className="col-6"></div>
+                            <div className="col-6">
+                                <label for="email" className="form-label">Teléfono</label>
+                                <input type="email" className="form-control" id="telefono" name="telefono" value={formData.telefono ?? ''} onChange={handleformUpdate} placeholder="444-444-4444" />
+                                <div className="invalid-feedback">
+                                    Ingresa un correo electrónico válido.
+                                </div>
+                            </div>
+                            <div className="col-sm-6">
+                                <label for="firstName" className="form-label">Nombre(s) y Apellidos</label>
+                                <input type="text" className="form-control" id="nombre" name="nombre" value={formData.nombre ?? ''} onChange={handleformUpdate} placeholder="Juan Pérez" required />
+                                <div className="invalid-feedback">
+                                    Tu nombre es requerido.
+                                </div>
+                            </div>
                             {
                                 advance > 0 &&
                                 <>
-                                    <div className="col-sm-6">
-                                        <label for="firstName" className="form-label">Nombre(s)</label>
-                                        <input type="text" className="form-control" id="firstName" placeholder="" value="" required="" />
-                                        <div className="invalid-feedback">
-                                            Tu nombre es requerido.
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <label for="lastName" className="form-label">Apellidos</label>
-                                        <input type="text" className="form-control" id="lastName" placeholder="" value="" required="" />
-                                        <div className="invalid-feedback">
-                                            Tus apellidos son requeridos.
-                                        </div>
-                                    </div>
                                     <div className="col-12">
                                         <label htmlFor="domiciliosGuardados">Domicilios usados anteriormente</label>
                                         <div className="input-group">
-                                            <select className="form-select">
+                                            <select className="form-select" name="idDomicilio" id="idDomicilio" value={formData.idDomicilio ?? 0} onChange={handleformUpdate}>
                                                 <option value="">Selecciona un domicilio</option>
-                                                <option value="">Av. Segunda de Palomares 203 A, Colonia Centro, blabla bla</option>
+                                                {
+                                                    userData.domicilios &&
+                                                    userData.domicilios.map(d=>{
+                                                        return (
+                                                            <option value={d.idDomicilio}>{`${d.calle} ${d.numero}, ${d.colonia}, ${d.ciudad}, ${d.estado}`}</option>
+                                                        )
+                                                    })
+                                                }
                                             </select>
-                                            <button class="btn btn-outline-secondary" type="button">+ Nuevo</button>
+                                            <button className="btn btn-outline-secondary" type="button" onClick={()=>setFormData({...formData, idDomicilio:-1})}>+ Nuevo</button>
                                         </div>
                                     </div>
                                 </>
@@ -140,7 +241,7 @@ export const Checkout = () => {
                                                 <option value="">XXXX-XXXX-XXXX-3256</option>
                                                 <option value="">XXXX-XXXX-XXXX-9992</option>
                                             </select>
-                                            <button class="btn btn-outline-secondary" type="button">+ Nueva</button>
+                                            <button className="btn btn-outline-secondary" type="button">+ Nueva</button>
                                         </div>
                                     </div>
                                     <div className="col-6"></div>

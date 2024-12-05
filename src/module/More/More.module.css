@@ -16,6 +16,9 @@
         mix-blend-mode: multiply;
         width: 70%;
         align-self: center;
+        height: 50%;
+        margin-bottom: 25px;
+        object-fit: contain;
     }
 
     & p {
