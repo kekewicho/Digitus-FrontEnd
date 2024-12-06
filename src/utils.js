@@ -112,19 +112,19 @@ export const group = ({ ...args }) => {
 
 export const dropDuplicates = (data, keys) => {
     return data
-      .map(item => 
-        keys.reduce((acc, key) => {
-          acc[key] = item[key];
-          return acc;
-        }, {})
-      )
-      .filter((value, index, self) =>
-        index === self.findIndex(v => 
-          keys.every(key => v[key] === value[key])
+        .map(item =>
+            keys.reduce((acc, key) => {
+                acc[key] = item[key];
+                return acc;
+            }, {})
         )
-      );
-  }
-  
+        .filter((value, index, self) =>
+            index === self.findIndex(v =>
+                keys.every(key => v[key] === value[key])
+            )
+        );
+}
+
 
 
 export const getTopN = (array, key, n, order) => {
@@ -134,7 +134,7 @@ export const getTopN = (array, key, n, order) => {
     let sortedArray;
 
     // Ordenar el array en función del valor del atributo 'key' en orden descendente
-    if (order=='asc') {
+    if (order == 'asc') {
         sortedArray = filteredArray.sort((a, b) => b[key] - a[key]);
     } else {
         sortedArray = filteredArray.sort((a, b) => a[key] - b[key]);
@@ -147,12 +147,12 @@ export const getTopN = (array, key, n, order) => {
 
 export function formatNumber(number, money = false) {
     if (typeof number !== "number") {
-      throw new Error("El valor debe ser un número");
+        throw new Error("El valor debe ser un número");
     }
-    
-    return money ? `$ ${number.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits: 2})}` : number.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits: 2}); // Usa configuración regional para formatear
-  }
-  
+
+    return money ? `$ ${number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Usa configuración regional para formatear
+}
+
 
 export function capitalize(val) {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
@@ -161,5 +161,19 @@ export function capitalize(val) {
 
 
 export function filterData(data, key, value) {
-    return data.filter(e=>e[key]==value)[0]
+    return data.filter(e => e[key] == value)[0]
+}
+
+
+export function ocultarNumeroTarjeta(numeroTarjeta) {
+    // Eliminar espacios en blanco del número de tarjeta
+    const numeroLimpio = numeroTarjeta.replace(/\s/g, "");
+
+    // Obtener los últimos 4 dígitos
+    const ultimos4Digitos = numeroLimpio.slice(-4);
+
+    // Reemplazar los primeros 12 dígitos con "X"
+    const numeroOculto = "XXXX XXXX XXXX " + ultimos4Digitos;
+
+    return numeroOculto;
 }
