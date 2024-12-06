@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCart } from "../../components/CartProvider";
-import { ocultarNumeroTarjeta, formatNumber, sum } from "../../utils";
+import { useNavigate, Link } from "react-router-dom";
+import { ocultarNumeroTarjeta, formatNumber, sum, capitalize } from "../../utils";
 
 
 
@@ -9,14 +10,24 @@ import styles from "./Checkout.module.css"
 export const Checkout = () => {
 
     const [advance, setAdvance] = useState(0);
-    const { cart } = useCart();
+    const { cart, cleanCart } = useCart();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({});
+    const [metodosPago, setMetodosPago] = useState([]);
 
     const [userData, setUserData] = useState({});
     const [addressData, setAddressData] = useState({});
     
     const [tarjetas, setTarjetas] = useState([]);
     const [tarjetaSelected, setTarjetaSelected] = useState({});
+
+    useEffect(()=>{
+        fetch('/digitus/catalogo/metodoPago')
+        .then(r=>r.json())
+        .then(r => {
+            setMetodosPago(r);
+        })
+    },[])
 
     const cartSubtotales = () => {
         if (!cart) return [];
@@ -32,9 +43,6 @@ export const Checkout = () => {
     };
 
     useEffect(() => {
-
-        console.log(validacionStage3())
-        console.log(advance)
         switch (advance) {
             case 0:
                 validacionStage1() && setStage1();
@@ -55,7 +63,7 @@ export const Checkout = () => {
             default:
                 break;
         }
-    }, [formData, addressData])
+    }, [formData, addressData, userData])
 
     function handleformUpdate(e) {
         const key = e.target.name;
@@ -70,9 +78,9 @@ export const Checkout = () => {
 
 
     function validacionStage1() {
-        const emailTest = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo);
-        const phoneTest = /^\+?[0-9]{10,13}$/.test(formData.telefono);
-        const nameTest = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{5,50}$/.test(formData.nombre ?? '');
+        const emailTest = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.correo);
+        const phoneTest = /^\+?[0-9]{10,13}$/.test(userData.telefono);
+        const nameTest = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{5,50}$/.test(userData.nombre ?? '');
 
         return emailTest && phoneTest && nameTest;
     }
@@ -84,9 +92,9 @@ export const Checkout = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                nombre: formData.nombre,
-                correo: formData.correo,
-                telefono: formData.telefono
+                nombre: userData.nombre,
+                correo: userData.correo,
+                telefono: userData.telefono
             })
         })
             .then(r => r.json())
@@ -95,22 +103,27 @@ export const Checkout = () => {
                     ...r
                 });
 
+                setFormData({
+                    ...formData,
+                    idUsuario: r.idUsuario
+                });
+
                 setAdvance(1);
             })
     }
 
 
     function validacionStage2() {
-        return Number.isInteger(parseInt(formData.idDomicilio)) ?? false;
+        return Number.isInteger(parseInt(formData.idDireccion)) ?? false;
     }
 
     function setStage2() {
-        if (formData.idDomicilio > 0) {
+        if (formData.idDireccion > 0) {
             const selectedAddress = userData.domicilios.find(
-                (d) => d.idDomicilio === parseInt(formData.idDomicilio)
+                (d) => d.idDireccion === parseInt(formData.idDireccion)
             );
             setAddressData(selectedAddress);
-        } else if (formData.idDomicilio === -1) {
+        } else if (formData.idDireccion === -1) {
             setAddressData({});
         }
 
@@ -149,7 +162,6 @@ export const Checkout = () => {
         fetch(`/digitus/catalogo/tarjetasPorUsuario/${userData.idUsuario}`)
         .then(r=> r.json())
         .then(r=> {
-            console.log(r)
             setTarjetas(r);
         })
         
@@ -158,7 +170,7 @@ export const Checkout = () => {
     }
     
     function validacionStage4() {
-        return Number.isInteger(parseInt(formData.idDomicilio)) ?? false;
+        return Number.isInteger(parseInt(formData.idDireccion)) ?? false;
     }
 
     function setStage4() {
@@ -167,7 +179,7 @@ export const Checkout = () => {
                 (t) => t.idTarjeta === parseInt(formData.idTarjeta)
             );
             setTarjetaSelected(selectedTarjeta);
-        } else if (formData.idDomicilio === -1) {
+        } else if (formData.idDireccion === -1) {
             setTarjetaSelected({});
         }
 
@@ -175,6 +187,122 @@ export const Checkout = () => {
 
     }
 
+    function handleSubmit() {
+        // console.log({
+        //     ...addressData,
+        //     codigoPostal: parseInt(addressData.codigoPostal),
+        //     numero: parseInt(addressData.numero),
+        //     idUsuario: formData.idUsuario
+        // })
+        if (formData.idDireccion == -1) {
+          fetch('/digitus/domicilio/registrarDomicilio', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...addressData,
+              codigoPostal: parseInt(addressData.codigoPostal),
+              numero: parseInt(addressData.numero),
+              idUsuario: formData.idUsuario
+            })
+          })
+          .then(r => r.json())
+          .then(r => {
+
+            setFormData({
+              ...formData,
+              idDireccion: r.idDomicilio
+            });
+
+      
+            const payload = {
+              pedido: {
+                idUsuario: parseInt(formData.idUsuario),
+                idDireccion: parseInt(r.idDomicilio),
+                idMetodoPago: parseInt(formData.idMetodoPago),
+                tarjeta: {
+                  numeroTarjeta: tarjetaSelected.numeroTarjeta,
+                  banco: tarjetaSelected.banco,
+                  caducidad: tarjetaSelected.caducidad
+                },
+                total: cartSubtotales() + 200
+              },
+              detalleProducto: [
+                ...cart.map(c => ({
+                  idProducto: c.idProducto,
+                  cantidad: c.cantidad
+                }))
+              ]
+            };
+      
+            console.log(payload);
+      
+            // Segundo fetch dentro del then del primero
+            return fetch('/digitus/pedidos/nuevoPedido', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(payload)
+            });
+          })
+          .then(r => r.json())
+          .then(r => {
+            alert(r.estadoPedido);
+            navigate('/more');
+          })
+          .catch(error => {
+            // Manejar errores de ambos fetch
+            console.error('Error al registrar domicilio o pedido:', error);
+            // Mostrar un mensaje de error al usuario
+          });
+        } else {
+          // Si ya existe idDireccion, ejecutar solo el segundo fetch
+          const payload = {
+            pedido: {
+              idUsuario: parseInt(formData.idUsuario),
+              idDireccion: parseInt(formData.idDireccion),
+              idMetodoPago: parseInt(formData.idMetodoPago),
+              tarjeta: {
+                numeroTarjeta: tarjetaSelected.numeroTarjeta,
+                banco: tarjetaSelected.banco,
+                caducidad: tarjetaSelected.caducidad
+              },
+              total: cartSubtotales() + 200
+            },
+            detalleProducto: [
+              ...cart.map(c => ({
+                idProducto: c.idProducto,
+                cantidad: c.cantidad
+              }))
+            ]
+          };
+      
+          console.log(payload);
+      
+          fetch('/digitus/pedidos/nuevoPedido', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+          })
+          .then(r => r.json())
+          .then(r => {
+            alert(r.estadoPedido);
+            cleanCart();
+            navigate('/more');
+          })
+          .catch(error => {
+            // Manejar errores del segundo fetch
+            console.error('Error al registrar pedido:', error);
+            // Mostrar un mensaje de error al usuario
+          });
+        }
+      }
+
+    formData && console.log(formData);
 
 
     return (
@@ -217,11 +345,11 @@ export const Checkout = () => {
                         </div>
                         <br />
                         <div className="row">
-                            <div className="col-12"><button className="btn btnPrimario" disabled={advance <= 4}>Confirmar orden</button></div>
+                            <div className="col-12"><button className="btn btnPrimario" onClick={handleSubmit}>Confirmar orden</button></div>
                         </div>
                         <div className="col-12">&nbsp;</div>
                         <div className="row">
-                            <div className="col-12"><button className="btn btnSecundario">Seguir comprando</button></div>
+                            <div className="col-12"><Link to="/more" className="btn btnSecundario">Seguir comprando</Link></div>
                         </div>
                     </div>
                 </div>
@@ -231,21 +359,21 @@ export const Checkout = () => {
                         <div className="row g-3">
                             <div className="col-6">
                                 <label for="email" className="form-label">Ingresa tu correo electrónico</label>
-                                <input type="email" className="form-control" id="correo" name="correo" value={formData.correo ?? ''} onChange={handleformUpdate} placeholder="you@example.com" />
+                                <input type="email" className="form-control" id="correo" name="correo" value={userData.correo ?? ''} onChange={(e)=>setUserData({...userData, correo:e.target.value })} placeholder="you@example.com" />
                                 <div className="invalid-feedback">
                                     Ingresa un correo electrónico válido.
                                 </div>
                             </div>
                             <div className="col-6">
                                 <label for="email" className="form-label">Teléfono</label>
-                                <input type="email" className="form-control" id="telefono" name="telefono" value={formData.telefono ?? ''} onChange={handleformUpdate} placeholder="444-444-4444" />
+                                <input type="email" className="form-control" id="telefono" name="telefono" value={userData.telefono ?? ''} onChange={(e)=>setUserData({...userData, telefono:e.target.value })} placeholder="444-444-4444" />
                                 <div className="invalid-feedback">
                                     Ingresa un correo electrónico válido.
                                 </div>
                             </div>
                             <div className="col-sm-6">
                                 <label for="firstName" className="form-label">Nombre(s) y Apellidos</label>
-                                <input type="text" className="form-control" id="nombre" name="nombre" value={formData.nombre ?? ''} onChange={handleformUpdate} placeholder="Juan Pérez" required />
+                                <input type="text" className="form-control" id="nombre" name="nombre" value={userData.nombre ?? ''} onChange={(e)=>setUserData({...userData, nombre:e.target.value })} placeholder="Juan Pérez" required />
                                 <div className="invalid-feedback">
                                     Tu nombre es requerido.
                                 </div>
@@ -256,18 +384,18 @@ export const Checkout = () => {
                                     <div className="col-12">
                                         <label htmlFor="domiciliosGuardados">Domicilios usados anteriormente</label>
                                         <div className="input-group">
-                                            <select className="form-select" name="idDomicilio" id="idDomicilio" value={formData.idDomicilio ?? 0} onChange={handleformUpdate}>
+                                            <select className="form-select" name="idDireccion" id="idDireccion" value={formData.idDireccion ?? 0} onChange={handleformUpdate}>
                                                 <option value="">Selecciona un domicilio</option>
                                                 {
                                                     userData.domicilios &&
                                                     userData.domicilios.map(d => {
                                                         return (
-                                                            <option value={d.idDomicilio}>{`${d.calle} ${d.numero}, ${d.colonia}, ${d.ciudad}, ${d.estado}`}</option>
+                                                            <option value={d.idDireccion}>{`${d.calle} ${d.numero}, ${d.colonia}, ${d.ciudad}, ${d.estado}`}</option>
                                                         )
                                                     })
                                                 }
                                             </select>
-                                            <button className="btn btn-outline-secondary" type="button" onClick={() => setFormData({ ...formData, idDomicilio: -1 })}>+ Nuevo</button>
+                                            <button className="btn btn-outline-secondary" type="button" onClick={() => setFormData({ ...formData, idDireccion: -1 })}>+ Nuevo</button>
                                         </div>
                                     </div>
                                 </>
@@ -284,7 +412,7 @@ export const Checkout = () => {
                                     </div>
                                     <div className="col-3">
                                         <label for="address" className="form-label">Número</label>
-                                        <input type="text" className="form-control" id="address" placeholder="123" required="" value={addressData.numero ?? ''} onChange={e=>setAddressData({...addressData, numero:e.target.value})} />
+                                        <input type="numeric" className="form-control" id="address" placeholder="123" required="" value={addressData.numero ?? ''} onChange={e=>setAddressData({...addressData, numero:e.target.value})} />
                                         <div className="invalid-feedback">
                                             El número es requerido.
                                         </div>
@@ -312,7 +440,7 @@ export const Checkout = () => {
                                     </div>
                                     <div className="col-md-3">
                                         <label for="zip" className="form-label">Código Postal</label>
-                                        <input type="text" className="form-control" id="zip" placeholder="" required="" value={addressData.codigoPostal ?? ''} onChange={e=>setAddressData({...addressData, codigoPostal:e.target.value})} />
+                                        <input type="number" className="form-control" id="zip" placeholder="" required="" value={addressData.codigoPostal ?? ''} onChange={e=>setAddressData({...addressData, codigoPostal:e.target.value})} />
                                         <div className="invalid-feedback">
                                             El código postal es requerido.
                                         </div>
@@ -340,7 +468,17 @@ export const Checkout = () => {
                                             <button className="btn btn-outline-secondary" type="button" onClick={()=>setFormData({...formData, idTarjeta:-1})}>+ Nueva</button>
                                         </div>
                                     </div>
-                                    <div className="col-6"></div>
+                                    <div className="col-6">
+                                        <label htmlFor="">Método de pago</label>
+                                        <select value={formData.idMetodoPago ?? ''} name='idMetodoPago' onChange={handleformUpdate} className="form-select">
+                                            <option value="">Selecciona un metodo de pago</option>
+                                            {
+                                                metodosPago && metodosPago.map(m=>(
+                                                    <option value={parseInt(m.idMetodoPago)}>{capitalize(m.descripcion)}</option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
                                     {
                                         advance > 3 &&
                                         <>
@@ -368,7 +506,7 @@ export const Checkout = () => {
                                             </div>
                                             <div className="col-md-3">
                                                 <label for="cc-cvv" className="form-label">CVV</label>
-                                                <input type="text" className="form-control" id="cc-cvv" placeholder="" required value={tarjetaSelected.cvv ?? ''} onChange={e=>setTarjetaSelected({...tarjetaSelected, cvv:e.target.value})} />
+                                                <input type="text" className="form-control" id="cc-cvv" placeholder="" required />
                                                 <div className="invalid-feedback">
                                                     Código de seguridad es requerido
                                                 </div>

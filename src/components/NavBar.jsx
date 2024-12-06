@@ -32,7 +32,7 @@ export const NavBar = ({ screen }) => {
                                 <Link className="bi bi-bag navbar-btn shopping-cart-icon" bag-items={`${sum(cart, 'cantidad')}`} to="/cart"></Link>
                             </li>
                             <li className="nav-item navbar-btn-container">
-                                <Link className="bi bi-person-fill navbar-btn login-icon" to="#"></Link>
+                                <Link className="bi bi-person-fill navbar-btn login-icon" to="/login"></Link>
                             </li>
                         </ul>
                     </div>

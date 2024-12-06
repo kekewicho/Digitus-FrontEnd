@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar } from "@hassanmojab/react-modern-calendar-datepicker";
 import '@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css';
@@ -7,6 +7,19 @@ import '@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css';
 import styles from "./Dashboard.module.css"
 
 export const Dashboard = () => {
+
+    const [pedidos, setPedidos] = useState([])
+
+    useEffect(()=> {
+        fetch('/digitus/pedidos/todosLosPedidos')
+        .then(r=>r.json())
+        .then(r=>{
+            setPedidos(r);
+        })
+    }, [])
+
+    pedidos && console.log(pedidos)
+
     return (
         <>
             <div className="container-fluid px-5 scrollable y-scroll" style={{ height: 'calc(100vh - 98px)' }}>
