@@ -1,0 +1,16 @@
+{
+    "rewrites": [
+        {
+            "source": "/digitus/:path*",
+            "destination": "https://digitus.alwaysdata.net/digitus/:path*"
+        },
+        {
+            "source": "/digitus/:path*/",
+            "destination": "https://digitus.alwaysdata.net/digitus/:path*/"
+        },
+        {
+            "source": "/:path((?!digitus).*)",
+            "destination": "/"
+        }
+    ]
+}
