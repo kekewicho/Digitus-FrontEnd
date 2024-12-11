@@ -44,10 +44,6 @@ export const Checkout = () => {
 
     useEffect(() => {
         switch (advance) {
-            case 0:
-                validacionStage1() && setStage1();
-                break;
-
             case 1:
                 validacionStage2() && setStage2();
                 break;
@@ -75,17 +71,28 @@ export const Checkout = () => {
         })
     }
 
+    function handleValidacionStage1() {
+        if (validacionStage1()) {
+            setStage1()
+        }
+    }
+
 
 
     function validacionStage1() {
         const emailTest = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.correo);
         const phoneTest = /^\+?[0-9]{10,13}$/.test(userData.telefono);
-        const nameTest = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{5,50}$/.test(userData.nombre ?? '');
+        const nameTest = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\s+[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\s+[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]*$/.test(userData.nombre ?? '');
 
         return emailTest && phoneTest && nameTest;
     }
 
     function setStage1() {
+        // alert(`Se lanza ${JSON.stringify({
+        //     nombre: userData.nombre,
+        //     correo: userData.correo,
+        //     telefono: userData.telefono
+        // })}`)
         fetch('/digitus/usuarios/validarUsuario', {
             method: 'POST',
             headers: {
@@ -366,7 +373,7 @@ export const Checkout = () => {
                             </div>
                             <div className="col-6">
                                 <label for="email" className="form-label">Teléfono</label>
-                                <input type="email" className="form-control" id="telefono" name="telefono" value={userData.telefono ?? ''} onChange={(e)=>setUserData({...userData, telefono:e.target.value })} placeholder="444-444-4444" />
+                                <input type="tel" className="form-control" id="telefono" name="telefono" value={userData.telefono ?? ''} onChange={(e)=>setUserData({...userData, telefono:e.target.value })} placeholder="444-444-4444" />
                                 <div className="invalid-feedback">
                                     Ingresa un correo electrónico válido.
                                 </div>
@@ -377,6 +384,10 @@ export const Checkout = () => {
                                 <div className="invalid-feedback">
                                     Tu nombre es requerido.
                                 </div>
+                            </div>
+                            <div className="col-6"></div>
+                            <div className="col-3">
+                                <button className="btn btnPrimario" onClick={handleValidacionStage1} type="button">Validar usuario</button>
                             </div>
                             {
                                 advance > 0 &&
