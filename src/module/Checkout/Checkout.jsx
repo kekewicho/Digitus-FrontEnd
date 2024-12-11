@@ -211,7 +211,8 @@ export const Checkout = () => {
               ...addressData,
               codigoPostal: parseInt(addressData.codigoPostal),
               numero: parseInt(addressData.numero),
-              idUsuario: formData.idUsuario
+              idUsuario: formData.idUsuario,
+              telefono:userData.telefono
             })
           })
           .then(r => r.json())
