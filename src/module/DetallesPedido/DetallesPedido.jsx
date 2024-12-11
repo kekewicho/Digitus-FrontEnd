@@ -49,7 +49,7 @@ export const DetallesPedido = () => {
                                             </div>
                                             <div className="col-3">&nbsp;</div>
                                             <div className="col-6 d-flex justify-content-end text-end">
-                                                <button className="btn bi bi-ban" style={{ height:'40px', color:'red' }}>&nbsp;Cancelar este item</button>
+                                                {/* <button className="btn bi bi-ban" style={{ height:'40px', color:'red' }}>&nbsp;Cancelar este item</button> */}
                                             </div>
                                         </div>
                                     </div>
